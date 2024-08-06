@@ -1,0 +1,15 @@
+{
+  "name": "noneos-handshake",
+  "version": "0.1.0",
+  "description": "Services that assist in data connection between Noneos",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "YAO",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
