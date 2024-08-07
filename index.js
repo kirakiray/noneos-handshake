@@ -44,8 +44,8 @@ app.post("/user", async (req, res) => {
       JSON.stringify({
         serverVersion,
         serverName,
-        get: `http://${req.headers.host}/get/${data.userID}`,
-        sse: `http://${req.headers.host}/sse/${data.userID}`,
+        get: `/get/${userID}`,
+        sse: `/sse/${userID}`,
       })
     );
   } catch (err) {
