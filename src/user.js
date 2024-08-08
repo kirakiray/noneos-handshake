@@ -1,47 +1,12 @@
-import { verifyMessage, getHash } from "./util.js";
 import { serverName, serverVersion } from "./data.js";
+import { User } from "./public-user.js";
 
 // 成功连接的所有用户
 export const users = new Map();
 
-export class User {
-  #data;
-  #signStr;
-  constructor(data, signStr) {
-    this.#data = data;
-    this.#signStr = signStr;
-  }
-
-  get id() {
-    return this.#data.find((e) => e[0] === "userID")[1];
-  }
-
-  // 验证自身信息
-  async verify() {
-    const data = this.#data;
-
-    const signPublic = data.find((e) => e[0] === "signPublic")[1];
-    const userID = data.find((e) => e[0] === "userID")[1];
-
-    // 验证id没问题
-    const userIdOK = (await getHash(signPublic)) === userID;
-
-    if (!userIdOK) {
-      throw new Error(`Verification userID failed`);
-    }
-
-    // 验证签名没问题
-    const result = await verifyMessage(
-      JSON.stringify(data),
-      this.#signStr,
-      signPublic
-    );
-
-    if (!result) {
-      throw new Error("Signature verification failed");
-    }
-
-    return true;
+export class ServerUser extends User {
+  constructor(...args) {
+    super(...args);
   }
 
   // 初始化主动推送的逻辑
@@ -62,6 +27,20 @@ export class User {
       __type: "init",
       serverName,
       serverVersion,
+    });
+
+    this.post({
+      __type: "update-user",
+      users: Array.from(users).map((e) => {
+        console.log(e);
+        const user = e[1];
+
+        return {
+          id: e[0],
+          data: user.data,
+          sign: this.dataSignature,
+        };
+      }),
     });
 
     // 添加到总用户数组

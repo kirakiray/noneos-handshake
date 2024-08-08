@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { User, users } from "./user.js";
+import { ServerUser, users } from "./src/user.js";
 
 const app = express();
 const port = 5569;
@@ -18,7 +18,7 @@ app.get("/user/:body", async (req, res) => {
   try {
     const { data, sign } = JSON.parse(req.params.body);
 
-    const user = new User(data, sign, {});
+    const user = new ServerUser(data, sign, {});
 
     // 验证用户信息签名没错才能继续
     const result = await user.verify();
