@@ -38,9 +38,6 @@ export class User {
       throw new Error(`Verification userID failed`);
     }
 
-    console.log([JSON.stringify(data), this.#dataSignature, signPublic]);
-    console.log(this.#dataSignature);
-
     // 验证签名没问题
     const result = await verifyMessage(
       JSON.stringify(data),
