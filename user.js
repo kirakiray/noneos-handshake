@@ -2,7 +2,6 @@ import { verifyMessage, getHash } from "./util.js";
 import { serverName, serverVersion } from "./data.js";
 
 // 成功连接的所有用户
-// export const users = new Set([]);
 export const users = new Map();
 
 export class User {
@@ -78,5 +77,11 @@ export class User {
 
   post(data) {
     this._res.write(`data: ${JSON.stringify(data)}\n\n`);
+  }
+
+  close() {
+    this._res && this._res.end();
+    this.onclose && this.onclose();
+    users.delete(this.id);
   }
 }
