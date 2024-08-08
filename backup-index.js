@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
+import { verifyMessage, getHash } from "./util.js";
 import { User } from "./user.js";
 
 const app = express();
