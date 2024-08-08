@@ -3,6 +3,33 @@ import { User } from "./public-user.js";
 
 // 成功连接的所有用户
 export const users = new Map();
+let oldUserStr = "";
+
+// 每3秒检查一次登录用户，并重新推送一次用户数据
+setInterval(() => {
+  let idStr = "";
+  const uData = Array.from(users).map((e) => {
+    const user = e[1];
+
+    idStr += `${user.dataSignature},`;
+
+    return {
+      data: user.data,
+      sign: user.dataSignature,
+    };
+  });
+
+  if (oldUserStr !== idStr) {
+    users.forEach((user) => {
+      user.post({
+        __type: "update-user",
+        users: uData,
+      });
+    });
+  }
+
+  oldUserStr = idStr;
+}, 3000);
 
 export class ServerUser extends User {
   constructor(...args) {
@@ -29,21 +56,20 @@ export class ServerUser extends User {
       serverVersion,
     });
 
+    // 添加到总用户数组
+    users.set(this.id, this);
+
     this.post({
       __type: "update-user",
       users: Array.from(users).map((e) => {
         const user = e[1];
 
         return {
-          id: e[0],
           data: user.data,
           sign: user.dataSignature,
         };
       }),
     });
-
-    // 添加到总用户数组
-    users.set(this.id, this);
 
     // 如果客户端关闭连接，停止发送事件
     res.on("close", () => {
