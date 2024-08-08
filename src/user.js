@@ -32,13 +32,12 @@ export class ServerUser extends User {
     this.post({
       __type: "update-user",
       users: Array.from(users).map((e) => {
-        console.log(e);
         const user = e[1];
 
         return {
           id: e[0],
           data: user.data,
-          sign: this.dataSignature,
+          sign: user.dataSignature,
         };
       }),
     });

@@ -30,8 +30,6 @@ app.get("/user/:body", async (req, res) => {
     console.error(err);
     res.status(404).send(err.stack || err.toString());
   }
-
-  console.log("所有用户: ", users);
 });
 
 app.post("/post/:userid", (req, res) => {

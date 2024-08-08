@@ -12,6 +12,10 @@ export class User {
     return this.#data.find((e) => e[0] === "userID")[1];
   }
 
+  get name() {
+    return this.#data.find((e) => e[0] === "userName")[1];
+  }
+
   get data() {
     return this.#data;
   }
@@ -33,6 +37,9 @@ export class User {
     if (!userIdOK) {
       throw new Error(`Verification userID failed`);
     }
+
+    console.log([JSON.stringify(data), this.#dataSignature, signPublic]);
+    console.log(this.#dataSignature);
 
     // 验证签名没问题
     const result = await verifyMessage(
