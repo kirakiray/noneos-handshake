@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { ServerUser, users } from "./src/user.js";
+import { ServerUser, apiIDs } from "./src/user.js";
 
 const app = express();
 const port = 5569;
@@ -32,8 +32,13 @@ app.get("/user/:body", async (req, res) => {
   }
 });
 
-app.post("/post/:userid", (req, res) => {
-  console.log();
+app.post("/post/:tempid", (req, res) => {
+  const { tempid } = req.params;
+
+  const target = apiIDs.get(tempid);
+  if (target) {
+    console.log("post: ", target);
+  }
 });
 
 app.listen(port, () => {
