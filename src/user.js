@@ -25,7 +25,7 @@ setInterval(() => {
 
   if (oldUserStr !== idStr) {
     users.forEach((user) => {
-      user.post({
+      user.send({
         __type: "update-user",
         users: uData,
       });
@@ -56,11 +56,11 @@ export class ServerUser extends User {
     res.flushHeaders();
 
     // 发送初始化数据
-    this.post({
+    this.send({
       __type: "init",
       serverName,
       serverVersion,
-      apiID: _apiID,
+      apiID: "/post/" + _apiID,
     });
 
     // 添加到总用户数组
@@ -68,7 +68,7 @@ export class ServerUser extends User {
     // 添加入口
     apiIDs.set(_apiID, this);
 
-    this.post({
+    this.send({
       __type: "update-user",
       users: Array.from(users).map((e) => {
         const user = e[1];
@@ -86,7 +86,7 @@ export class ServerUser extends User {
     });
   }
 
-  post(data) {
+  send(data) {
     this._res.write(`data: ${JSON.stringify(data)}\n\n`);
   }
 

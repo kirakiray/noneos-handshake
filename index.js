@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { ServerUser, apiIDs } from "./src/user.js";
+import { ServerUser, apiIDs, users } from "./src/user.js";
 
 const app = express();
 const port = 5569;
@@ -35,9 +35,31 @@ app.get("/user/:body", async (req, res) => {
 app.post("/post/:tempid", (req, res) => {
   const { tempid } = req.params;
 
-  const target = apiIDs.get(tempid);
-  if (target) {
-    console.log("post: ", target);
+  const fromUser = apiIDs.get(tempid);
+  if (fromUser) {
+    try {
+      const data = JSON.parse(req.body);
+
+      if (data.agent) {
+        const targetUser = users.get(data.agent.targetId);
+
+        // 向目标用户发送连接请求
+        if (!targetUser) {
+          res.status(400).send("Target does not exist");
+          return;
+        }
+
+        targetUser.send({
+          __type: "connect",
+          fromUserID: fromUser.id,
+          data: data.agent.data,
+        });
+      }
+
+      res.status(200).send("ok");
+    } catch (err) {
+      res.status(404).send(err.stack || err.toString());
+    }
   }
 });
 
