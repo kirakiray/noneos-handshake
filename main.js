@@ -32,10 +32,10 @@ app.get("/user/:body", async (req, res) => {
   }
 });
 
-app.post("/post/:tempid", (req, res) => {
-  const { tempid } = req.params;
+app.post("/post/:aid", (req, res) => {
+  const { aid } = req.params;
 
-  const fromUser = apiIDs.get(tempid);
+  const fromUser = apiIDs.get(aid);
   if (fromUser) {
     try {
       const data = JSON.parse(req.body);
@@ -45,18 +45,42 @@ app.post("/post/:tempid", (req, res) => {
 
         // 向目标用户发送连接请求
         if (!targetUser) {
-          res.status(400).send("Target does not exist");
+          res.status(400).send({
+            error: "Target does not exist",
+          });
           return;
         }
 
         targetUser.send({
-          __type: "connect",
+          __type: "agent-connect",
           fromUserID: fromUser.id,
+          fromUser: {
+            data: fromUser.data,
+            sign: fromUser.dataSignature,
+          },
           data: data.agent.data,
         });
+      } else if (data.get) {
+        const { userID } = data.get;
+
+        const targetUser = users.get(userID);
+
+        if (targetUser) {
+          res.status(200).send({
+            ok: 1,
+            data: {
+              user: targetUser.data,
+              sign: targetUser.dataSignature,
+            },
+          });
+          return;
+        }
+
+        res.status(200).send({ error: "not online" });
+        return;
       }
 
-      res.status(200).send("ok");
+      res.status(200).send({ ok: 1 });
     } catch (err) {
       res.status(404).send(err.stack || err.toString());
     }
