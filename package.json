@@ -5,8 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "debug": "nodemon --inspect index.js",
-    "build": "node index.js"
+    "debug": "nodemon --inspect main.js",
+    "main": "node main.js"
   },
   "author": "YAO",
   "license": "Apache-2.0",
