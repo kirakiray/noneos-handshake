@@ -1,0 +1,17 @@
+{
+  "name": "noneos-handshake",
+  "version": "0.1.0",
+  "description": "Services that assist in data connection between Noneos",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "debug": "nodemon --inspect index.js",
+    "main": "node index.js"
+  },
+  "author": "YAO",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  }
+}
