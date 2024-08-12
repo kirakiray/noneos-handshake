@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "debug": "nodemon --inspect index.js",
-    "build": "node index.js"
+    "main": "node index.js"
   },
   "author": "YAO",
   "license": "Apache-2.0",
