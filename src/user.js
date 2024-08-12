@@ -1,4 +1,4 @@
-import { serverName, serverVersion } from "./data.js";
+import { serverName, serverVersion, serverID } from "./data.js";
 import { User } from "./public-user.js";
 
 // 成功连接的所有用户
@@ -60,6 +60,7 @@ export class ServerUser extends User {
       __type: "init",
       serverName,
       serverVersion,
+      serverID,
       apiID: "/post/" + _apiID,
     });
 
