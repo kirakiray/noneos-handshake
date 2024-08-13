@@ -6,35 +6,6 @@ export const users = new Map();
 
 export const apiIDs = new Map();
 
-// // 旧记录数据
-// let oldUserStr = "";
-
-// // 每3秒检查一次登录用户，并重新推送一次用户数据
-// setInterval(() => {
-//   let idStr = "";
-//   const uData = Array.from(users).map((e) => {
-//     const user = e[1];
-
-//     idStr += `${user.dataSignature},`;
-
-//     return {
-//       data: user.data,
-//       sign: user.dataSignature,
-//     };
-//   });
-
-//   if (oldUserStr !== idStr) {
-//     users.forEach((user) => {
-//       user.send({
-//         __type: "update-user",
-//         users: uData,
-//       });
-//     });
-//   }
-
-//   oldUserStr = idStr;
-// }, 3000);
-
 export class ServerUser extends User {
   constructor(...args) {
     super(...args);

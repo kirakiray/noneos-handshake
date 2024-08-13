@@ -60,8 +60,8 @@ app.post("/post/:aid", (req, res) => {
           },
           data: data.agent.data,
         });
-      } else if (data.get) {
-        const { userID } = data.get;
+      } else if (data.getUser) {
+        const { userID } = data.getUser;
 
         const targetUser = users.get(userID);
 
