@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "debug": "nodemon --inspect main.js",
+    "dev": "nodemon --inspect main.js",
     "main": "node main.js",
     "deploy": "node main.js"
   },
