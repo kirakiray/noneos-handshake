@@ -40,21 +40,13 @@ export class ServerUser extends User {
     // 添加入口
     apiIDs.set(_apiID, this);
 
-    this.send({
-      __type: "update-user",
-      users: Array.from(users).map((e) => {
-        const user = e[1];
-
-        return {
-          data: user.data,
-          sign: user.dataSignature,
-        };
-      }),
-    });
-
     // 如果客户端关闭连接，停止发送事件
     res.on("close", () => {
       this.close();
+      users.delete(this.id);
+      apiIDs.delete(_apiID);
+
+      console.log("用户断开连接: ", this);
     });
   }
 

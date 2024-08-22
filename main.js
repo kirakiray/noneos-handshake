@@ -26,6 +26,8 @@ app.get("/user/:body", async (req, res) => {
     if (result) {
       await user.init(res);
     }
+
+    console.log("init: ", users);
   } catch (err) {
     console.error(err);
     res.status(404).send(err.stack || err.toString());
@@ -41,6 +43,7 @@ app.post("/post/:aid", (req, res) => {
       const data = JSON.parse(req.body);
 
       if (data.agent) {
+        // 用户数据代理
         const targetUser = users.get(data.agent.targetId);
 
         // 向目标用户发送连接请求
@@ -61,6 +64,7 @@ app.post("/post/:aid", (req, res) => {
           data: data.agent.data,
         });
       } else if (data.getUser) {
+        // 获取用户
         const { userID } = data.getUser;
 
         const targetUser = users.get(userID);
@@ -77,6 +81,19 @@ app.post("/post/:aid", (req, res) => {
         }
 
         res.status(200).send({ error: "not online" });
+        return;
+      } else if (data.getRecommend) {
+        // 获取推荐用户卡片数据
+        res.status(200).send({
+          ok: 1,
+          data: Array.from(users.values()).map((user) => {
+            return {
+              data: user.data,
+              sign: user.dataSignature,
+            };
+          }),
+        });
+
         return;
       }
 
