@@ -13,6 +13,18 @@ app.use(express.urlencoded({ extended: false, limit: "4kb" }));
 app.use(express.raw({ limit: "4kb" }));
 app.use(express.text({ limit: "4kb" }));
 
+app.get("/online-users", async (req, res) => {
+  res.status(200).send({
+    ok: 1,
+    data: Array.from(users.values()).map((user) => {
+      return {
+        data: user.data,
+        sign: user.dataSignature,
+      };
+    }),
+  });
+});
+
 // 服务器信息入口
 app.get("/user/:body", async (req, res) => {
   try {
