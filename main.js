@@ -112,6 +112,12 @@ app.post("/post/:aid", (req, res) => {
         });
 
         return;
+      } else if (data.ping) {
+        res.status(200).send({
+          pong: 1,
+        });
+
+        return;
       }
 
       res.status(200).send({ ok: 1 });

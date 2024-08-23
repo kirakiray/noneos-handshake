@@ -26,15 +26,6 @@ export class ServerUser extends User {
     // 及时发送刷新响应头
     res.flushHeaders();
 
-    // 发送初始化数据
-    this.send({
-      __type: "init",
-      serverName,
-      serverVersion,
-      serverID,
-      apiID: "/post/" + _apiID,
-    });
-
     // 添加到总用户数组
     users.set(this.id, this);
     // 添加入口
@@ -47,6 +38,15 @@ export class ServerUser extends User {
       apiIDs.delete(_apiID);
 
       console.log("用户断开连接: ", this);
+    });
+
+    // 发送初始化数据
+    this.send({
+      __type: "init",
+      serverName,
+      serverVersion,
+      serverID,
+      apiID: "/post/" + _apiID,
     });
   }
 
