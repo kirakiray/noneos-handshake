@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import { serverID, serverName } from "./src/data.js";
 import { ServerUser, apiIDs, users } from "./src/user.js";
 
 const app = express();
@@ -16,12 +17,16 @@ app.use(express.text({ limit: "4kb" }));
 app.get("/online-users", async (req, res) => {
   res.status(200).send({
     ok: 1,
-    data: Array.from(users.values()).map((user) => {
-      return {
-        data: user.data,
-        sign: user.dataSignature,
-      };
-    }),
+    data: {
+      serverID,
+      serverName,
+      users: Array.from(users.values()).map((user) => {
+        return {
+          data: user.data,
+          sign: user.dataSignature,
+        };
+      }),
+    },
   });
 });
 
