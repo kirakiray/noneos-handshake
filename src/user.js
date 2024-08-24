@@ -1,4 +1,4 @@
-import { serverName, serverVersion, serverID } from "./data.js";
+import { serverVersion } from "./data.js";
 import { User } from "./public-user.js";
 
 // 成功连接的所有用户
@@ -7,8 +7,12 @@ export const users = new Map();
 export const apiIDs = new Map();
 
 export class ServerUser extends User {
-  constructor(...args) {
-    super(...args);
+  #serverOptions;
+  constructor(data, dataSignature, serverOptions) {
+    super(data, dataSignature);
+
+    this.#serverOptions = serverOptions;
+    // const { serverName, serverID } = this.#serverOptions;
   }
 
   // 初始化主动推送的逻辑
@@ -39,6 +43,8 @@ export class ServerUser extends User {
 
       console.log("用户断开连接: ", this);
     });
+
+    const { serverName, serverID } = this.#serverOptions;
 
     // 发送初始化数据
     this.send({
