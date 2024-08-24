@@ -110,7 +110,7 @@ export default class HandShakeServer {
 
             res.status(200).send({ error: "not online" });
             return;
-          } else if (data.getRecommend) {
+          } else if (data.recommends) {
             // 获取推荐用户卡片数据
             res.status(200).send({
               ok: 1,
