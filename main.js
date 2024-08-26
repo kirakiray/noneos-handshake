@@ -91,6 +91,8 @@ export default class HandShakeServer {
               },
               data: data.agent.data,
             });
+
+            res.status(200).send({ ok: 1 });
           } else if (data.getUser) {
             // 获取用户
             const { userID } = data.getUser;
@@ -109,7 +111,6 @@ export default class HandShakeServer {
             }
 
             res.status(200).send({ error: "not online" });
-            return;
           } else if (data.recommends) {
             // 获取推荐用户卡片数据
             res.status(200).send({
@@ -121,17 +122,26 @@ export default class HandShakeServer {
                 };
               }),
             });
+          } else if (data.search) {
+            const targetUser = users.get(data.search);
 
-            return;
+            const respData = {
+              ok: 1,
+            };
+
+            if (targetUser) {
+              respData.user = {
+                data: targetUser.data,
+                sign: targetUser.dataSignature,
+              };
+            }
+
+            res.status(200).send(respData);
           } else if (data.ping) {
             res.status(200).send({
               pong: 1,
             });
-
-            return;
           }
-
-          res.status(200).send({ ok: 1 });
         } catch (err) {
           res.status(404).send(err.stack || err.toString());
         }
