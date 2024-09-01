@@ -1,8 +1,6 @@
 import HandShakeServer from "./main.js";
 
 const server = new HandShakeServer({
-  name: "test-server",
+  name: "handshake-dev",
   port: 5569,
 });
-
-

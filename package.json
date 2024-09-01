@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon --inspect start-case.js",
-    "main": "node start-case.js"
+    "start": "node start-case.js"
   },
   "author": "YAO",
   "license": "Apache-2.0",
