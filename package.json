@@ -1,12 +1,12 @@
 {
   "name": "noneos-handshake",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Services that assist in data connection between Noneos",
-  "main": "index.js",
+  "main": "main.js",
   "type": "module",
   "scripts": {
-    "debug": "nodemon --inspect main.js",
-    "main": "node main.js"
+    "dev": "nodemon --inspect start-case.js",
+    "main": "node start-case.js"
   },
   "author": "YAO",
   "license": "Apache-2.0",
