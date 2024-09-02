@@ -41,11 +41,12 @@ export default class HandShakeServer {
     // 服务器信息入口
     app.get("/user/:body", async (req, res) => {
       try {
-        const { data, sign } = JSON.parse(req.params.body);
+        const { data, sign, sessionID } = JSON.parse(req.params.body);
 
         const user = new ServerUser(data, sign, {
           serverName,
           serverID,
+          sessionID,
         });
 
         // 验证用户信息签名没错才能继续

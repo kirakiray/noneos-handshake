@@ -10,6 +10,7 @@ export class ServerUser extends User {
   #serverOptions;
   constructor(data, dataSignature, serverOptions) {
     super(data, dataSignature);
+    this._sessionID = serverOptions.sessionID;
 
     this.#serverOptions = serverOptions;
     // const { serverName, serverID } = this.#serverOptions;
@@ -30,16 +31,22 @@ export class ServerUser extends User {
     // 及时发送刷新响应头
     res.flushHeaders();
 
-    // 添加到总用户数组
+    const cacheObj = users.get(this.id);
+
+    if (cacheObj) {
+      this.close();
+      console.log("repeat: ", cacheObj);
+    }
+
     users.set(this.id, this);
+
+    // 添加到总用户数组
     // 添加入口
     apiIDs.set(_apiID, this);
 
     // 如果客户端关闭连接，停止发送事件
     res.on("close", () => {
       this.close();
-      users.delete(this.id);
-      apiIDs.delete(_apiID);
 
       console.log("用户断开连接: ", this);
     });
@@ -63,7 +70,10 @@ export class ServerUser extends User {
   close() {
     this._res && this._res.end();
     this.onclose && this.onclose();
-    users.delete(this.id);
     apiIDs.delete(this._apiID);
+    const targetUser = users.get(this.id);
+    if (targetUser.sessionID === this.sessionID) {
+      users.delete(this.id);
+    }
   }
 }
