@@ -34,7 +34,7 @@ export class ServerUser extends User {
     const cacheObj = users.get(this.id);
 
     if (cacheObj) {
-      this.close();
+      cacheObj._res.end();
       console.log("repeat: ", cacheObj);
     }
 
@@ -68,11 +68,11 @@ export class ServerUser extends User {
   }
 
   close() {
-    this._res && this._res.end();
+    // this._res && this._res.end();
     this.onclose && this.onclose();
     apiIDs.delete(this._apiID);
     const targetUser = users.get(this.id);
-    if (targetUser.sessionID === this.sessionID) {
+    if (targetUser._sessionID === this._sessionID) {
       users.delete(this.id);
     }
   }
