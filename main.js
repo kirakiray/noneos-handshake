@@ -38,10 +38,14 @@ export default class HandShakeServer {
       });
     });
 
+    const userEntry = `/user`;
+
     // 服务器信息入口
-    app.get("/user/:body", async (req, res) => {
+    app.get(`${userEntry}/:body`, async (req, res) => {
       try {
-        const { data, sign, sessionID } = JSON.parse(req.params.body);
+        const { data, sign, sessionID, serverSign } = JSON.parse(
+          req.params.body
+        );
 
         const user = new ServerUser(data, sign, {
           serverName,
@@ -50,13 +54,23 @@ export default class HandShakeServer {
         });
 
         // 验证用户信息签名没错才能继续
-        const result = await user.verify();
+        const userSignResult = await user.verify();
 
-        if (result) {
+        // 当前请求的服务器请求入口地址
+        const signServerUrl = `${req.protocol}://${req.get(
+          "host"
+        )}${userEntry}`;
+
+        const serverSignResult = await user.verify(signServerUrl, serverSign);
+
+        if (userSignResult && serverSignResult) {
           await user.init(res);
+          return;
         }
 
-        console.log("init: ", users);
+        res.status(404).send("sign not ok");
+
+        console.log("init: ", user);
       } catch (err) {
         console.error(err);
         res.status(404).send(err.stack || err.toString());
