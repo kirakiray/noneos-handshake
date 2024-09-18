@@ -50,7 +50,7 @@ export function base64ToArrayBuffer(base64String) {
 export const getHash = async (data) => {
   const digest = await crypto.subtle.digest(
     "SHA-256",
-    stringToArrayBuffer(data)
+    dataToArrayBuffer(data).buffer
   );
 
   return u8ToHex(new Uint8Array(digest));
@@ -62,12 +62,16 @@ function u8ToHex(u8) {
     .join("");
 }
 
-export function stringToArrayBuffer(str) {
+export function dataToArrayBuffer(str) {
+  if (str instanceof Object) {
+    str = JSON.stringify(str);
+  }
   const encoder = new TextEncoder();
-  return encoder.encode(str).buffer;
+  return encoder.encode(str);
 }
 
-export const getPairString = async (signPair) => {
+// 将crypto对象转为字符串
+export const pairToString = async (signPair) => {
   const signPublicArray = await crypto.subtle.exportKey(
     "spki",
     signPair.publicKey
@@ -83,14 +87,35 @@ export const getPairString = async (signPair) => {
   };
 };
 
-export const getSignPublic = () => {
-  const signObj = JSON.parse();
+// 字符串转为cypto对象
+export const stringToPair = async (pair, type = "sign") => {
+  return {
+    privateKey: await crypto.subtle.importKey(
+      "pkcs8", // 导入的密钥类型，这里是私钥
+      base64ToArrayBuffer(pair.private),
+      {
+        name: type === "sign" ? "RSA-PSS" : "RSA-OAEP",
+        hash: "SHA-256",
+      },
+      true,
+      type === "sign" ? ["sign"] : ["decrypt"]
+    ),
+    publicKey: await crypto.subtle.importKey(
+      "spki", // 导入的密钥类型，这里是公钥
+      base64ToArrayBuffer(pair.public),
+      {
+        name: type === "sign" ? "RSA-PSS" : "RSA-OAEP",
+        hash: "SHA-256",
+      },
+      true,
+      type === "sign" ? ["verify"] : ["encrypt"]
+    ),
+  };
 };
 
 // 验证信息
 export async function verifyMessage(message, signature, publicKey) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(message);
+  const data = dataToArrayBuffer(message);
 
   const realPublicKey = await crypto.subtle.importKey(
     "spki", // 导入的密钥类型，这里是公钥
@@ -113,3 +138,16 @@ export async function verifyMessage(message, signature, publicKey) {
     data
   );
 }
+
+// 验证签名对象
+export const verifyObject = (obj) => {
+  const { data, sign: signData } = obj;
+
+  const dataMap = new Map(data);
+
+  return verifyMessage(
+    JSON.stringify(data),
+    signData,
+    dataMap.get("signPublic")
+  );
+};
