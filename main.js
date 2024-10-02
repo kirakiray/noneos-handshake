@@ -6,8 +6,11 @@ export default class HandShakeServer {
   #serverName;
   #serverID;
   #app;
+  #allows;
   constructor(opts) {
-    const { port, name: serverName } = opts || {};
+    const { port, name: serverName, allows } = opts || {};
+
+    this.#allows = allows;
 
     this.#serverName = serverName;
     const serverID = (this.#serverID = Math.random().toString(32).slice(2));
@@ -57,11 +60,15 @@ export default class HandShakeServer {
         const userSignResult = await user.verify();
 
         // 当前请求的服务器请求入口地址
-        const signServerUrl = `${req.protocol}://${req.get(
-          "host"
-        )}${userEntry}`;
-
-        const serverSignResult = await user.verify(signServerUrl, serverSign);
+        const allows = this.#allows;
+        let serverSignResult = false;
+        for (let i = 0; i < allows.length; i++) {
+          const signServerUrl = allows[i];
+          serverSignResult = await user.verify(signServerUrl, serverSign);
+          if (serverSignResult) {
+            break;
+          }
+        }
 
         if (userSignResult && serverSignResult) {
           await user.init(res);
