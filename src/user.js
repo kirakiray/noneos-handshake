@@ -72,7 +72,7 @@ export class ServerUser extends User {
     this.onclose && this.onclose();
     apiIDs.delete(this._apiID);
     const targetUser = users.get(this.id);
-    if (targetUser._sessionID === this._sessionID) {
+    if (targetUser && targetUser._sessionID === this._sessionID) {
       users.delete(this.id);
     }
   }
