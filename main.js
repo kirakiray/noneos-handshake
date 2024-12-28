@@ -75,12 +75,12 @@ export default class HandShakeServer {
           return;
         }
 
-        res.status(404).send("sign not ok");
+        res.status(400).send("sign not ok");
 
         console.log("init: ", user);
       } catch (err) {
         console.error(err);
-        res.status(404).send(err.stack || err.toString());
+        res.status(400).send(err.stack || err.toString());
       }
     });
 
@@ -96,29 +96,10 @@ export default class HandShakeServer {
             res.status(200).send({
               pong: 1,
             });
-
             return;
           }
 
-          if (data.getUser) {
-            // 获取用户
-            const { userID } = data.getUser;
-
-            const targetUser = users.get(userID);
-
-            if (targetUser) {
-              res.status(200).send({
-                ok: 1,
-                data: {
-                  user: targetUser.data,
-                  sign: targetUser.dataSignature,
-                },
-              });
-              return;
-            }
-
-            res.status(200).send({ error: "not online" });
-          } else if (data.type) {
+          if (data.type) {
             const task = await getTask(data.type);
 
             const result = await task({
@@ -127,9 +108,12 @@ export default class HandShakeServer {
             });
 
             res.status(200).send(result);
+            return;
           }
+
+          res.status(404).send("");
         } catch (err) {
-          res.status(404).send(err.stack || err.toString());
+          res.status(400).send(err.stack || err.toString());
         }
       }
     });
