@@ -84,7 +84,7 @@ export default class HandShakeServer {
       }
     });
 
-    app.post("/post/:aid", (req, res) => {
+    app.post("/post/:aid", async (req, res) => {
       const { aid } = req.params;
 
       const fromUser = apiIDs.get(aid);
@@ -163,6 +163,15 @@ export default class HandShakeServer {
             res.status(200).send({
               pong: 1,
             });
+          } else if (data.type) {
+            const task = await getTask(data.type);
+
+            const result = await task({
+              fromUser,
+              data,
+            });
+
+            res.status(200).send(result);
           }
         } catch (err) {
           res.status(404).send(err.stack || err.toString());
@@ -185,3 +194,9 @@ export default class HandShakeServer {
     this.#app.close();
   }
 }
+
+const getTask = async (taskName) => {
+  const task = await import(`./tasks/${taskName}.js`);
+
+  return task.default;
+};
