@@ -4,6 +4,7 @@ export default async ({ fromUser, data }) => {
   const { setCode, getUser, remove } = data;
 
   if (setCode) {
+    // 设置设备码
     if (sUSers.has(setCode)) {
       throw new Error("setCode is already in use");
     }
@@ -26,9 +27,21 @@ export default async ({ fromUser, data }) => {
       ok: 1,
     };
   } else if (getUser) {
+    // 根据设备码获取用户
     const targetUser = sUSers.get(getUser);
 
     if (targetUser) {
+      // 顺便给目标用户发送有用户请求了你的数据
+      targetUser.send({
+        __type: "get-user-card",
+        data: {
+          code: getUser,
+          way: "device-code",
+          userId: fromUser.id,
+          userData: fromUser.data,
+        },
+      });
+
       return {
         ok: 1,
         user: {
