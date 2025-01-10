@@ -75,16 +75,16 @@ export default class HandShakeServer {
           return;
         }
 
-        res.status(404).send("sign not ok");
+        res.status(400).send("sign not ok");
 
         console.log("init: ", user);
       } catch (err) {
         console.error(err);
-        res.status(404).send(err.stack || err.toString());
+        res.status(400).send(err.stack || err.toString());
       }
     });
 
-    app.post("/post/:aid", (req, res) => {
+    app.post("/post/:aid", async (req, res) => {
       const { aid } = req.params;
 
       const fromUser = apiIDs.get(aid);
@@ -92,80 +92,28 @@ export default class HandShakeServer {
         try {
           const data = JSON.parse(req.body);
 
-          if (data.agent) {
-            // 用户数据代理
-            const targetUser = users.get(data.agent.targetId);
-
-            // 向目标用户发送连接请求
-            if (!targetUser) {
-              res.status(400).send({
-                error: "Target does not exist",
-              });
-              return;
-            }
-
-            targetUser.send({
-              __type: "agent-connect",
-              fromUserID: fromUser.id,
-              fromUser: {
-                data: fromUser.data,
-                sign: fromUser.dataSignature,
-              },
-              data: data.agent.data,
-            });
-
-            res.status(200).send({ ok: 1 });
-          } else if (data.getUser) {
-            // 获取用户
-            const { userID } = data.getUser;
-
-            const targetUser = users.get(userID);
-
-            if (targetUser) {
-              res.status(200).send({
-                ok: 1,
-                data: {
-                  user: targetUser.data,
-                  sign: targetUser.dataSignature,
-                },
-              });
-              return;
-            }
-
-            res.status(200).send({ error: "not online" });
-          } else if (data.recommends) {
-            // 获取推荐用户卡片数据
-            res.status(200).send({
-              ok: 1,
-              data: Array.from(users.values()).map((user) => {
-                return {
-                  data: user.data,
-                  sign: user.dataSignature,
-                };
-              }),
-            });
-          } else if (data.search) {
-            const targetUser = users.get(data.search);
-
-            const respData = {
-              ok: 1,
-            };
-
-            if (targetUser) {
-              respData.user = {
-                data: targetUser.data,
-                sign: targetUser.dataSignature,
-              };
-            }
-
-            res.status(200).send(respData);
-          } else if (data.ping) {
+          if (data.ping) {
             res.status(200).send({
               pong: 1,
             });
+            return;
           }
+
+          if (data.type) {
+            const task = await getTask(data.type);
+
+            const result = await task({
+              fromUser,
+              data,
+            });
+
+            res.status(200).send(result);
+            return;
+          }
+
+          res.status(404).send("");
         } catch (err) {
-          res.status(404).send(err.stack || err.toString());
+          res.status(400).send(err.stack || err.toString());
         }
       }
     });
@@ -185,3 +133,17 @@ export default class HandShakeServer {
     this.#app.close();
   }
 }
+
+const tasks = {};
+
+// 获取任务
+const getTask = async (taskName) => {
+  if (tasks[taskName]) {
+    return tasks[taskName];
+  }
+
+  const task = await import(`./tasks/${taskName}.js`);
+  tasks[taskName] = task.default;
+
+  return task.default;
+};

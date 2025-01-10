@@ -14,6 +14,8 @@ export class ServerUser extends User {
 
     this.#serverOptions = serverOptions;
     // const { serverName, serverID } = this.#serverOptions;
+
+    this._closes = new Set(); // 关闭后触发的事件队列
   }
 
   // 初始化主动推送的逻辑
@@ -69,7 +71,8 @@ export class ServerUser extends User {
 
   close() {
     // this._res && this._res.end();
-    this.onclose && this.onclose();
+    this._closes.forEach((fn) => fn());
+    this._closes.clear();
     apiIDs.delete(this._apiID);
     const targetUser = users.get(this.id);
     if (targetUser && targetUser._sessionID === this._sessionID) {
