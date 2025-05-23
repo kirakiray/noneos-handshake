@@ -1,7 +1,7 @@
-import HandShakeServer from "./main.js";
+import { initServer } from "./dist.js";
 
-const server = new HandShakeServer({
-  name: "test-server",
-  port: 5569, // 服务器端口
-  allows: ["http://localhost:5569"], // 允许的域名
+const wss = initServer({
+  port: 5579,
+  name: "test-handserver",
+  admin: ["1d14d3b31a76eeab220b48f562521f9b023e362119149072dcc02add230351b0"],
 });
