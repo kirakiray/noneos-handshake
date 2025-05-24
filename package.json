@@ -1,8 +1,8 @@
 {
   "name": "noneos-handshake",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "Services that assist in data connection between Noneos",
-  "main": "main.js",
+  "main": "dist.js",
   "type": "module",
   "scripts": {
     "dev": "nodemon --inspect start-case.js",
@@ -12,6 +12,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "ws": "^8.18.1"
   }
 }
