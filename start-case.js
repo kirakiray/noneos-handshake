@@ -1,6 +1,6 @@
 import { initServer } from "./dist.js";
 
-const wss = initServer({
+const server = await initServer({
   port: 5579,
-  name: "test-handserver",
+  serverName: "test-handserver",
 });
