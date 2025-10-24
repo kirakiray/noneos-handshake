@@ -1,4 +1,4 @@
-import { initServer } from "./dist.js";
+import { initServer } from "./dist/index.js";
 
 const server = await initServer({
   port: 5579,
