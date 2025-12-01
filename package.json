@@ -1,6 +1,6 @@
 {
   "name": "noneos-handshake",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "Services that assist in data connection between Noneos",
   "main": "dist/index.js",
   "type": "module",
